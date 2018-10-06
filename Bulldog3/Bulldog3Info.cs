@@ -26,7 +26,7 @@ namespace Bulldog3
             get
             {
                 //Return a short string describing the purpose of this GHA library.
-                return "";
+                return "Buldog plug-in: General purpose plug-in developed by Roberto Monesi @ SCA";
             }
         }
         public override Guid Id
@@ -42,7 +42,7 @@ namespace Bulldog3
             get
             {
                 //Return a string identifying you or your company.
-                return "";
+                return "Roberto Monesi";
             }
         }
         public override string AuthorContact
@@ -50,7 +50,7 @@ namespace Bulldog3
             get
             {
                 //Return a string representing your preferred contact details.
-                return "";
+                return "roberto.monesi@outlook.com";
             }
         }
     }
