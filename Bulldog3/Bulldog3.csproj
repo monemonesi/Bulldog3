@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Bulldog3Info.cs" />
     <Compile Include="Constants\Constants.cs" />
+    <Compile Include="Geometries\GhcDuplicateBorder.cs" />
     <Compile Include="Models\BrepBorderExtractor.cs" />
     <Compile Include="Models\ValuesAllocator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,9 +67,7 @@
     <Compile Include="Toolbox\GhcRebuildCurvesProportionallyPA.cs" />
     <Compile Include="Toolbox\GhcUnifyCurvesDirection.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Geometries\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

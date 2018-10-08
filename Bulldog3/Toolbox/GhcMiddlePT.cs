@@ -44,13 +44,13 @@ namespace Bulldog3.Toolbox
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             List<Curve> inCurves = new List<Curve>();
-            bool dataList = DA.GetDataList<Curve>(0, inCurves);
+            bool succes = DA.GetDataList<Curve>(0, inCurves);
             List<GH_Point> ghMidPoints = new List<GH_Point>();
             List<Vector3d> tangents = new List<Vector3d>();
             List<double> globalCoordinateZ = new List<double>();
-            if (!dataList)
+            if (!succes)
             {
-                this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error , "Check your input buddy");
+                this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error , Constants.Constants.INPUT_ERROR_MESSAGE);
             }
             else
             {
