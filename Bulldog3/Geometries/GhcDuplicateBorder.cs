@@ -43,31 +43,39 @@ namespace Bulldog3.Geometries
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             List<Brep> inBreps = new List<Brep>();
-            bool succesfullInputsConvertion = DA.GetDataList<Brep>(0, inBreps);
-            if (!succesfullInputsConvertion)
+            bool areInputsOk = DA.GetDataList<Brep>(0, inBreps);
+            if (!areInputsOk)
             {
                 this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, Constants.Constants.INPUT_ERROR_MESSAGE);
             }
             else
             {
-                GH_Structure<GH_Curve> joinedCurves = new GH_Structure<GH_Curve>();
-                for (int i = 0; i < inBreps.Count; i++)
-                {
-                    GH_Path path = new GH_Path(i);
-                    List<Curve> curvesToAdd = new List<Curve>();
-                    curvesToAdd.AddRange(BrepBorderExtractor.GetJoined(inBreps[i]));
-
-                    foreach (Curve curve in curvesToAdd)
-                    {
-                        GH_Curve ghCurve = null;
-                        if(GH_Convert.ToGHCurve(curve,GH_Conversion.Both, ref ghCurve))
-                        {
-                            joinedCurves.Append(ghCurve, path);
-                        }
-                    }
-                }
+                GH_Structure<GH_Curve> joinedCurves = DuplicateBorder(inBreps);
                 DA.SetDataTree(0, joinedCurves);
             }
+        }
+
+        private static GH_Structure<GH_Curve> DuplicateBorder(IList<Brep> inBreps)
+        {
+            GH_Structure<GH_Curve> joinedCurves = new GH_Structure<GH_Curve>();
+            for (int i = 0; i < inBreps.Count; i++)
+            {
+                GH_Path path = new GH_Path(i);
+                Brep brep = inBreps[i];
+                List<Curve> curvesToAdd = new List<Curve>();
+                curvesToAdd.AddRange(BrepBorderExtractor.GetJoined(brep));
+
+                foreach (Curve curve in curvesToAdd)
+                {
+                    GH_Curve ghCurve = null;
+                    if (GH_Convert.ToGHCurve(curve, GH_Conversion.Both, ref ghCurve))
+                    {
+                        joinedCurves.Append(ghCurve, path);
+                    }
+                }
+            }
+
+            return joinedCurves;
         }
 
         /// <summary>
