@@ -55,6 +55,7 @@ namespace Bulldog3.Geometries
             GH_Structure<GH_Number> inGhDistances = new GH_Structure<GH_Number>();
             bool areDistancesOk = DA.GetDataTree(1, out inGhDistances);
             CheckGetDataConversion(areDistancesOk);
+
             bool brepTopologyEqualDistanceTopology = inGhDistances.TopologyDescription.Equals(inGhBreps.TopologyDescription);
             GH_Structure<GH_Number> ghDistances = new GH_Structure<GH_Number>();
             if (brepTopologyEqualDistanceTopology)
@@ -115,6 +116,7 @@ namespace Bulldog3.Geometries
 
                 }
             }
+
             bool useParallel = false;
             DA.GetData<bool>(4, ref useParallel);
 
@@ -197,6 +199,8 @@ namespace Bulldog3.Geometries
             DA.SetDataTree(0, ghSolidBreps);
 
         }//end SolveInstance
+
+        
 
         private void CheckGetDataConversion(bool getData)
         {
