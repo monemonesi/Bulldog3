@@ -12,8 +12,8 @@ namespace Bulldog3.Toolbox
         /// Initializes a new instance of the GhcCloseOpen class.
         /// </summary>
         public GhcCloseOpenCurves()
-          : base("CloseOpen", "CloseOpen",
-                "Analyze end-points and if wanted close the curves as in Rhino",
+          : base("CloseOpenCurves", "CloseOpen",
+                "Close open Curves and highlight end points when the closing command fail.",
                 "Bulldog3", "Toolbox")
         {
         }
@@ -36,9 +36,7 @@ namespace Bulldog3.Toolbox
             pManager.AddPointParameter("EndPointsOpen", "endPts", "End points for open curves", GH_ParamAccess.list);
             pManager.AddCurveParameter("ClosedCurves", "closedC", "Closed Curves", GH_ParamAccess.list);
             pManager.AddBooleanParameter("ClosingResult", "results", "Has been closed?", GH_ParamAccess.list);
-        //    pManager.AddIntegerParameter("ClosedCurvedIndex", "closedCId", "Id of the curves correctly closed", GH_ParamAccess.list);
-        //    pManager.AddCurveParameter("OpenCurves", "openC", "Open Curves", GH_ParamAccess.list);
-        //    pManager.AddIntegerParameter("OpenCurvedIndex", "openCId", "Id of the curves still open", GH_ParamAccess.list);
+        
         }
 
         /// <summary>
@@ -61,8 +59,6 @@ namespace Bulldog3.Toolbox
                 return;
             ValuesAllocator.MatchLists(inCurves, inTollerances);
 
-
-            //output params
             List<Point3d> endPoints = new List<Point3d>();
             List<Curve> closedCurves = new List<Curve>();
             List<bool> closingResults = new List<bool>();
