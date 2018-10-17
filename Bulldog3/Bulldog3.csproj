@@ -64,6 +64,7 @@
     <Compile Include="Models\BrepBorderExtractor.cs" />
     <Compile Include="Models\SeriesFromLists.cs" />
     <Compile Include="Models\ValuesAllocator.cs" />
+    <Compile Include="Optimization\GhcAdaptiveCurveSubD.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Toolbox\GhcCenterOfMass.cs" />
     <Compile Include="Toolbox\GhcCloseOpenCurves.cs" />

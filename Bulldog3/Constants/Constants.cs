@@ -16,5 +16,7 @@ namespace Bulldog3.Constants
 
         public const string PARALLEL_WARNING = "You are entering in the CPU parallel World. Do it at Your own risk." +
             " Please double check the outputs because the results are not guaranteed";
+
+        public const double STANDARD_TOLLERANCE = 0.01;
     }
 }
