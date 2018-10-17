@@ -6,6 +6,7 @@ using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;
 using Rhino.Geometry;
 
+
 namespace Bulldog3.Geometries
 {
     public class GhcDuplicateBorder : GH_Component
@@ -50,33 +51,12 @@ namespace Bulldog3.Geometries
             }
             else
             {
-                GH_Structure<GH_Curve> joinedCurves = DuplicateBorder(inBreps);
+                GH_Structure<GH_Curve> joinedCurves = BrepBorderExtractor.GetJoined(inBreps);
                 DA.SetDataTree(0, joinedCurves);
             }
         }
 
-        private static GH_Structure<GH_Curve> DuplicateBorder(IList<Brep> inBreps)
-        {
-            GH_Structure<GH_Curve> joinedCurves = new GH_Structure<GH_Curve>();
-            for (int i = 0; i < inBreps.Count; i++)
-            {
-                GH_Path path = new GH_Path(i);
-                Brep brep = inBreps[i];
-                List<Curve> curvesToAdd = new List<Curve>();
-                curvesToAdd.AddRange(BrepBorderExtractor.GetJoined(brep));
-
-                foreach (Curve curve in curvesToAdd)
-                {
-                    GH_Curve ghCurve = null;
-                    if (GH_Convert.ToGHCurve(curve, GH_Conversion.Both, ref ghCurve))
-                    {
-                        joinedCurves.Append(ghCurve, path);
-                    }
-                }
-            }
-
-            return joinedCurves;
-        }
+        
 
         /// <summary>
         /// Provides an Icon for the component.
