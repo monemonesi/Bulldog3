@@ -43,9 +43,6 @@ namespace Bulldog3.Dataviz3D
         {
             pManager.AddLineParameter("Lines", "Lines", "Histogram 3D lines", GH_ParamAccess.list);
             pManager.AddColourParameter("Colours", "Colours", "Colours for each Line", GH_ParamAccess.list);
-            //pManager.AddPlaneParameter("perpPlanes", "perpPlanes", "perpPlanes", GH_ParamAccess.list);
-            //pManager.AddNumberParameter("rotAngle", "rotAngle", "rotAngle", GH_ParamAccess.list);
-
         }
         /// <summary>
         /// 
@@ -82,15 +79,7 @@ namespace Bulldog3.Dataviz3D
             DA.GetDataList(2, inDataOptional);
             if (inDataOptional.Count == 0)
             {
-                List<double> tParams = new List<double>();
-                double counter = 0.0;
-                double step = 1.0 / inData.Count;
-                foreach (var data in inData)
-                {
-                    tParams.Add(counter);
-                    counter += step;
-                }
-                inDataOptional.AddRange(tParams);
+                EqualCurveSubD(inData, inDataOptional);
             }
             ValuesAllocator.MatchLists(inData, inDataOptional);
 
@@ -114,8 +103,6 @@ namespace Bulldog3.Dataviz3D
 
 
             List<Line> histogramLines = new List<Line>();
-            //List<double> rotAngles = new List<double>();
-            //List<Plane> perpFrames = new List<Plane>();
 
             for (int i = 0; i < inData.Count; i++)
             {
@@ -126,9 +113,6 @@ namespace Bulldog3.Dataviz3D
                 double angle_rad = inRotationAngles[i];
                 if (_useDegrees) angle_rad = RhinoMath.ToRadians(angle_rad);
                 pFrame.Rotate(angle_rad, pFrame.ZAxis);
-
-                //perpFrames.Add(pFrame);
-                //rotAngles.Add(angle_rad);
 
                 Line line = new Line(pFrame.Origin, pFrame.YAxis, inData[i]);
                 histogramLines.Add(line);
@@ -144,9 +128,20 @@ namespace Bulldog3.Dataviz3D
             #region AssignOutput
             DA.SetDataList(0, histogramLines);
             DA.SetDataList(1, histogramColors);
-            //DA.SetDataList(2, perpFrames);
-            //DA.SetDataList(3, rotAngles);
             #endregion
+        }
+
+        private static void EqualCurveSubD(List<double> inData, List<double> inDataOptional)
+        {
+            List<double> tParams = new List<double>();
+            double counter = 0.0;
+            double step = 1.0 / inData.Count;
+            foreach (var data in inData)
+            {
+                tParams.Add(counter);
+                counter += step;
+            }
+            inDataOptional.AddRange(tParams);
         }
 
         /// <summary>
