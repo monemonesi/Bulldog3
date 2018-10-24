@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Bulldog3Info.cs" />
     <Compile Include="Constants\Constants.cs" />
+    <Compile Include="Dataviz3D\GhcHistogramFromCurve.cs" />
     <Compile Include="Geometries\GhcDuplicateBorder.cs" />
     <Compile Include="Geometries\GhcCreateSolidPA.cs" />
     <Compile Include="Geometries\GhcMeshPatch.cs" />
