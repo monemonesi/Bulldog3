@@ -98,11 +98,20 @@ namespace Bulldog3.Dataviz3D
             int lastValueIndex = inData.Count - 1;
             List<double> sortedData = new List<double>(inData);
             sortedData.Sort();
-
-            Interval dataDomain = new Interval(sortedData[0], sortedData[lastValueIndex]);
-
+            double refStartDomain = sortedData[0];
+            double refEndDomain = sortedData[lastValueIndex];
 
             List<Line> histogramLines = new List<Line>();
+            List<Color> histogramColors = new List<Color>();
+
+            int alphaStartDom = inFirstColor.A;
+            int alphaEndDom = inSecondColor.A;
+            int redStartDom = inFirstColor.R;
+            int redEndDom = inSecondColor.R;
+            int blueStartDom = inFirstColor.B;
+            int blueEndDom = inSecondColor.B;
+            int greenStartDom = inFirstColor.G;
+            int greenEndDom = inSecondColor.G;
 
             for (int i = 0; i < inData.Count; i++)
             {
@@ -114,22 +123,26 @@ namespace Bulldog3.Dataviz3D
                 if (_useDegrees) angle_rad = RhinoMath.ToRadians(angle_rad);
                 pFrame.Rotate(angle_rad, pFrame.ZAxis);
 
-                Line line = new Line(pFrame.Origin, pFrame.YAxis, inData[i]);
+                double dataVal = inData[i];
+                Line line = new Line(pFrame.Origin, pFrame.YAxis, dataVal);
                 histogramLines.Add(line);
 
-                
+                int alpha = (int)Remapper.Map(dataVal, refStartDomain, refEndDomain, alphaStartDom, alphaEndDom);
+                int red = (int)Remapper.Map(dataVal, refStartDomain, refEndDomain, redStartDom, redEndDom);
+                int green = (int)Remapper.Map(dataVal, refStartDomain, refEndDomain, greenStartDom, greenEndDom);
+                int blue = (int)Remapper.Map(dataVal, refStartDomain, refEndDomain, blueStartDom, blueEndDom);
+
+                Color color = Color.FromArgb(alpha, red, green, blue);
+                histogramColors.Add(color);
             }
-
-
-            List<Color> histogramColors = new List<Color>();
-            histogramColors.Add(inFirstColor);
-            histogramColors.Add(inSecondColor);
 
             #region AssignOutput
             DA.SetDataList(0, histogramLines);
             DA.SetDataList(1, histogramColors);
             #endregion
         }
+
+        
 
         private static void EqualCurveSubD(List<double> inData, List<double> inDataOptional)
         {

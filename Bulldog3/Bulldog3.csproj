@@ -63,6 +63,7 @@
     <Compile Include="Geometries\GhcCreateSolidPA.cs" />
     <Compile Include="Geometries\GhcMeshPatch.cs" />
     <Compile Include="Models\BrepBorderExtractor.cs" />
+    <Compile Include="Models\Remapper.cs" />
     <Compile Include="Models\SeriesFromLists.cs" />
     <Compile Include="Models\ValuesAllocator.cs" />
     <Compile Include="Optimization\GhcAdaptiveCurveSubD.cs" />
