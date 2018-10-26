@@ -42,7 +42,6 @@ namespace Bulldog3.Toolbox
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            //bool success = false;
             List<object> inReferenceList = new List<object>();
             bool success = DA.GetDataList(0, inReferenceList);
             if(success)
