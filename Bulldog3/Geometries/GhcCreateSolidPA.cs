@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Bulldog3.Models;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;
@@ -47,14 +48,15 @@ namespace Bulldog3.Geometries
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            InputChecker inputChecker = new InputChecker(this);
 
             GH_Structure<GH_Brep> inGhBreps = new GH_Structure<GH_Brep>();
             bool areBrepsOk = DA.GetDataTree(0, out inGhBreps);
-            CheckGetDataConversion(areBrepsOk);
+            inputChecker.CheckAndShowConversionError(areBrepsOk);
 
             GH_Structure<GH_Number> inGhDistances = new GH_Structure<GH_Number>();
             bool areDistancesOk = DA.GetDataTree(1, out inGhDistances);
-            CheckGetDataConversion(areDistancesOk);
+            inputChecker.CheckAndShowConversionError(areDistancesOk);
 
             bool brepTopologyEqualDistanceTopology = inGhDistances.TopologyDescription.Equals(inGhBreps.TopologyDescription);
             GH_Structure<GH_Number> ghDistances = new GH_Structure<GH_Number>();
@@ -75,7 +77,7 @@ namespace Bulldog3.Geometries
 
             GH_Structure<GH_Boolean> inGhBothSides = new GH_Structure<GH_Boolean>();
             bool areBoolBothSidesOk = DA.GetDataTree(2, out inGhBothSides);
-            CheckGetDataConversion(areBoolBothSidesOk);
+            inputChecker.CheckAndShowConversionError(areBoolBothSidesOk);
 
             bool brepTopologyEqualBothSidesTopology = inGhBothSides.TopologyDescription.Equals(inGhBreps.TopologyDescription);
             GH_Structure<GH_Boolean> ghBothSides = new GH_Structure<GH_Boolean>();
@@ -96,7 +98,7 @@ namespace Bulldog3.Geometries
 
             GH_Structure<GH_Boolean> inGhFlipNormals = new GH_Structure<GH_Boolean>();
             bool areBoolFlipNormalsOk = DA.GetDataTree(3, out inGhFlipNormals);
-            CheckGetDataConversion(areBoolFlipNormalsOk);
+            inputChecker.CheckAndShowConversionError(areBoolFlipNormalsOk);
 
             bool brepTopologyEqualFlipNTopology = inGhFlipNormals.TopologyDescription.Equals(inGhBreps.TopologyDescription);
             GH_Structure<GH_Boolean> ghFlipNormals = new GH_Structure<GH_Boolean>();
@@ -202,15 +204,15 @@ namespace Bulldog3.Geometries
 
         
 
-        private void CheckGetDataConversion(bool getData)
-        {
-            if (!getData) ShowInputsError();
-        }
+        //private void CheckGetDataConversion(bool getData)
+        //{
+        //    if (!getData) ShowInputsError();
+        //}
 
-        private void ShowInputsError()
-        {
-            this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, Constants.Constants.INPUT_ERROR_MESSAGE);
-        }
+        //private void ShowInputsError()
+        //{
+        //    this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, Constants.Constants.INPUT_ERROR_MESSAGE);
+        //}
 
         /// <summary>
         /// Provides an Icon for the component.
