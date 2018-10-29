@@ -16,7 +16,7 @@ namespace Bulldog3.Models
             ghc = _ghc;
         }
 
-        public void CheckAndShowConversionError(bool succesfullConversion)
+        public void DisplayIfConversionFailed(bool succesfullConversion)
         {
             if (!succesfullConversion)
             {

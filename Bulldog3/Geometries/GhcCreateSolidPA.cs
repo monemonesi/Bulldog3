@@ -53,25 +53,25 @@ namespace Bulldog3.Geometries
             #region GetIputFromCanvas
             GH_Structure<GH_Brep> inGhBreps = new GH_Structure<GH_Brep>();
             bool areBrepsOk = DA.GetDataTree(0, out inGhBreps);
-            inputChecker.CheckAndShowConversionError(areBrepsOk);
+            inputChecker.DisplayIfConversionFailed(areBrepsOk);
             inGhBreps.Graft(GH_GraftMode.GraftAll);
             inGhBreps.Simplify(GH_SimplificationMode.CollapseAllOverlaps);
 
             GH_Structure<GH_Number> inGhDistances = new GH_Structure<GH_Number>();
             bool areDistancesOk = DA.GetDataTree(1, out inGhDistances);
-            inputChecker.CheckAndShowConversionError(areDistancesOk);
+            inputChecker.DisplayIfConversionFailed(areDistancesOk);
             GH_Structure<GH_Number> ghDistances = new GH_Structure<GH_Number>();
             ghDistances = ValuesAllocator.NumbersDSFromBreps(inGhBreps, inGhDistances, ghDistances);
 
             GH_Structure<GH_Boolean> inGhBothSides = new GH_Structure<GH_Boolean>();
             bool areBoolBothSidesOk = DA.GetDataTree(2, out inGhBothSides);
-            inputChecker.CheckAndShowConversionError(areBoolBothSidesOk);
+            inputChecker.DisplayIfConversionFailed(areBoolBothSidesOk);
             GH_Structure<GH_Boolean> ghBothSides = new GH_Structure<GH_Boolean>();
             ghBothSides = ValuesAllocator.BoolDSFromBreps(inGhBreps, inGhBothSides, ghBothSides);
 
             GH_Structure<GH_Boolean> inGhFlipNormals = new GH_Structure<GH_Boolean>();
             bool areBoolFlipNormalsOk = DA.GetDataTree(3, out inGhFlipNormals);
-            inputChecker.CheckAndShowConversionError(areBoolFlipNormalsOk);
+            inputChecker.DisplayIfConversionFailed(areBoolFlipNormalsOk);
             GH_Structure<GH_Boolean> ghFlipNormals = new GH_Structure<GH_Boolean>();
             ghFlipNormals = ValuesAllocator.BoolDSFromBreps(inGhBreps, inGhFlipNormals, ghFlipNormals);
 

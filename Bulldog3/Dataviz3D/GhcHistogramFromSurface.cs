@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using Bulldog3.Models;
 using Grasshopper.Kernel;
-using Grasshopper.Kernel.Parameters;
-using Rhino;
 using Rhino.Geometry;
 
 namespace Bulldog3.Dataviz3D
 {
-    public class GhcHistogramFromCurve : GH_Component
+    public class GhcHistogramFromSurface : GH_Component
     {
         /// <summary>
-        /// Initializes a new instance of the GhcHistogramFromCurve class.
+        /// Initializes a new instance of the GhcHistogramFromSurface class.
         /// </summary>
-        public GhcHistogramFromCurve()
-          : base("HistogramFromCurve", "HistFromCurve",
-              "Create an Histogram like graph from 3D curve",
+        public GhcHistogramFromSurface()
+          : base("HistogramFromSurface", "HistFromSrf",
+              "Create an Histogram like graph from a surface",
               "Bulldog3", "Dataviz3D")
         {
         }
@@ -27,13 +24,11 @@ namespace Bulldog3.Dataviz3D
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddCurveParameter("BaseCurve", "crv", "base curve", GH_ParamAccess.item);
+            pManager.AddSurfaceParameter("BaseSrf", "srf", "base surface", GH_ParamAccess.item);
             pManager.AddNumberParameter("Data", "data", "Main data to display", GH_ParamAccess.list);
-            pManager.AddNumberParameter("OptionalData", "dataOp", "Secondary data / Curve subdivision", GH_ParamAccess.list);
-            pManager[2].Optional = true;
+            pManager.AddPointParameter("BasePoints", "pt", "base point for each data to display", GH_ParamAccess.list);
             pManager.AddColourParameter("Colour 0", "col0", "First reference Colour", GH_ParamAccess.item);
             pManager.AddColourParameter("Colour 1", "col1", "Second reference Colour", GH_ParamAccess.item);
-            pManager.AddAngleParameter("RotationAngleInDegree", "degA", "Rotation angle for the graph", GH_ParamAccess.list, 0.00);
         }
 
         /// <summary>
@@ -44,14 +39,6 @@ namespace Bulldog3.Dataviz3D
             pManager.AddLineParameter("Lines", "Lines", "Histogram 3D lines", GH_ParamAccess.list);
             pManager.AddColourParameter("Colours", "Colours", "Colours for each Line", GH_ParamAccess.list);
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        private bool _useDegrees;
-        protected override void BeforeSolveInstance()
-        {
-            _useDegrees = (Params.Input[5] as Param_Number).UseDegrees;
-        }
 
         /// <summary>
         /// This is the method that actually does the work.
@@ -61,35 +48,27 @@ namespace Bulldog3.Dataviz3D
         {
             InputChecker inputChecker = new InputChecker(this);
 
-            #region AssignInput
-            Curve inCrv = null;
-            bool canGetCrv = DA.GetData(0, ref inCrv);
-            inputChecker.DisplayIfConversionFailed(canGetCrv);
-            inCrv.Domain = new Interval(0, 1);
+            #region GetInpuFromCanvas
+            Surface inBaseSrf = null;
+            bool canGetSurface = DA.GetData(0, ref inBaseSrf);
+            inputChecker.DisplayIfConversionFailed(canGetSurface);
+            inBaseSrf.SetDomain(0, new Interval(0.0, 1.0));
+            inBaseSrf.SetDomain(1, new Interval(0.0, 1.0));
 
             List<double> inData = new List<double>();
             bool canGetData = DA.GetDataList(1, inData);
             inputChecker.DisplayIfConversionFailed(canGetData);
 
-            List<double> inDataOptional = new List<double>();
-            bool canGetDataOptional = DA.GetDataList(2, inDataOptional);
-            inputChecker.DisplayIfConversionFailed(canGetDataOptional);
-            if (inDataOptional.Count == 0)
-            {
-                EqualCurveSubD(inData, inDataOptional);
-            }
-            ValuesAllocator.MatchLists(inData, inDataOptional);
+            List<Point3d> inBasePts = new List<Point3d>();
+            bool canConvertPts = DA.GetDataList(2, inBasePts);
+            inputChecker.DisplayIfConversionFailed(canConvertPts);
+            ValuesAllocator.MatchLists(inData, inBasePts);
 
             Color inFirstColor = new Color();
-            if(!DA.GetData(3, ref inFirstColor)) return;
+            if (!DA.GetData(3, ref inFirstColor)) return;
 
             Color inSecondColor = new Color();
-            if(!DA.GetData(4, ref inSecondColor)) return;
-
-            List<double> inRotationAngles = new List<double>();
-            DA.GetDataList(5, inRotationAngles);
-            ValuesAllocator.MatchLists(inData, inRotationAngles);
-
+            if (!DA.GetData(4, ref inSecondColor)) return;
             #endregion
 
             int lastValueIndex = inData.Count - 1;
@@ -112,16 +91,15 @@ namespace Bulldog3.Dataviz3D
 
             for (int i = 0; i < inData.Count; i++)
             {
-                Plane pFrame;
-                double tValue = inDataOptional[i];
-                inCrv.PerpendicularFrameAt(tValue, out pFrame);
-
-                double angle_rad = inRotationAngles[i];
-                if (_useDegrees) angle_rad = RhinoMath.ToRadians(angle_rad);
-                pFrame.Rotate(angle_rad, pFrame.ZAxis);
+                Point3d inPt = inBasePts[i];
+                double uDir = 0.0;
+                double vDir = 0.0;
+                if(!inBaseSrf.ClosestPoint(inPt, out uDir, out vDir)) return;
+                Plane basePlane = new Plane();
+                if(!inBaseSrf.FrameAt(uDir, vDir, out basePlane)) return;
 
                 double dataVal = inData[i];
-                Line line = new Line(pFrame.Origin, pFrame.YAxis, dataVal);
+                Line line = new Line(basePlane.Origin, basePlane.ZAxis, dataVal);
                 histogramLines.Add(line);
 
                 int alpha = (int)Remapper.Map(dataVal, refStartDomain, refEndDomain, alphaStartDom, alphaEndDom);
@@ -133,25 +111,12 @@ namespace Bulldog3.Dataviz3D
                 histogramColors.Add(color);
             }
 
+
+
             #region SetOutput
             DA.SetDataList(0, histogramLines);
             DA.SetDataList(1, histogramColors);
             #endregion
-        }
-
-        
-
-        private static void EqualCurveSubD(List<double> inData, List<double> inDataOptional)
-        {
-            List<double> tParams = new List<double>();
-            double counter = 0.0;
-            double step = 1.0 / inData.Count;
-            foreach (var data in inData)
-            {
-                tParams.Add(counter);
-                counter += step;
-            }
-            inDataOptional.AddRange(tParams);
         }
 
         /// <summary>
@@ -172,7 +137,7 @@ namespace Bulldog3.Dataviz3D
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("8682019b-a55f-47cd-ab45-6b264e635b1f"); }
+            get { return new Guid("732309a1-c770-4f56-98b6-4b00110e2ed4"); }
         }
     }
 }
