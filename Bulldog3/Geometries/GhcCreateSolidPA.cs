@@ -50,85 +50,39 @@ namespace Bulldog3.Geometries
         {
             InputChecker inputChecker = new InputChecker(this);
 
+            #region GetIputFromCanvas
             GH_Structure<GH_Brep> inGhBreps = new GH_Structure<GH_Brep>();
             bool areBrepsOk = DA.GetDataTree(0, out inGhBreps);
             inputChecker.CheckAndShowConversionError(areBrepsOk);
+            inGhBreps.Graft(GH_GraftMode.GraftAll);
+            inGhBreps.Simplify(GH_SimplificationMode.CollapseAllOverlaps);
 
             GH_Structure<GH_Number> inGhDistances = new GH_Structure<GH_Number>();
             bool areDistancesOk = DA.GetDataTree(1, out inGhDistances);
             inputChecker.CheckAndShowConversionError(areDistancesOk);
-
-            bool brepTopologyEqualDistanceTopology = inGhDistances.TopologyDescription.Equals(inGhBreps.TopologyDescription);
             GH_Structure<GH_Number> ghDistances = new GH_Structure<GH_Number>();
-            if (brepTopologyEqualDistanceTopology)
-            {
-                ghDistances = inGhDistances.Duplicate();
-            }
-            else
-            {
-                foreach (GH_Path ghPath in inGhBreps.Paths)
-                {
-                    for (int i = 0; i < inGhBreps.get_Branch(ghPath).Count; i++)
-                    {
-                        ghDistances.Insert(inGhDistances.get_LastItem(true), ghPath, i);
-                    }
-                }
-            }
+            ghDistances = ValuesAllocator.NumbersDSFromBreps(inGhBreps, inGhDistances, ghDistances);
 
             GH_Structure<GH_Boolean> inGhBothSides = new GH_Structure<GH_Boolean>();
             bool areBoolBothSidesOk = DA.GetDataTree(2, out inGhBothSides);
             inputChecker.CheckAndShowConversionError(areBoolBothSidesOk);
-
-            bool brepTopologyEqualBothSidesTopology = inGhBothSides.TopologyDescription.Equals(inGhBreps.TopologyDescription);
             GH_Structure<GH_Boolean> ghBothSides = new GH_Structure<GH_Boolean>();
-            if (brepTopologyEqualBothSidesTopology)
-            {
-                ghBothSides = inGhBothSides.Duplicate();
-            }
-            else
-            {
-                foreach (GH_Path ghPath in inGhBreps.Paths)
-                {
-                    for (int i = 0; i < inGhBreps.get_Branch(ghPath).Count; i++)
-                    {
-                        ghBothSides.Insert(inGhBothSides.get_LastItem(true), ghPath, i);
-                    }
-                }
-            }
+            ghBothSides = ValuesAllocator.BoolDSFromBreps(inGhBreps, inGhBothSides, ghBothSides);
 
             GH_Structure<GH_Boolean> inGhFlipNormals = new GH_Structure<GH_Boolean>();
             bool areBoolFlipNormalsOk = DA.GetDataTree(3, out inGhFlipNormals);
             inputChecker.CheckAndShowConversionError(areBoolFlipNormalsOk);
-
-            bool brepTopologyEqualFlipNTopology = inGhFlipNormals.TopologyDescription.Equals(inGhBreps.TopologyDescription);
             GH_Structure<GH_Boolean> ghFlipNormals = new GH_Structure<GH_Boolean>();
-            if (brepTopologyEqualFlipNTopology)
-            {
-                ghFlipNormals = inGhFlipNormals.Duplicate();
-            }
-            else
-            {
-                foreach (GH_Path ghPath in inGhBreps.Paths)
-                {
-
-                    for (int i = 0; i < inGhBreps.get_Branch(ghPath).Count; i++)
-                    {
-                        ghFlipNormals.Insert(inGhFlipNormals.get_LastItem(true), ghPath, i);
-                    }
-
-                }
-            }
+            ghFlipNormals = ValuesAllocator.BoolDSFromBreps(inGhBreps, inGhFlipNormals, ghFlipNormals);
 
             bool useParallel = false;
             DA.GetData<bool>(4, ref useParallel);
 
-            inGhBreps.Graft(GH_GraftMode.GraftAll);
-            ghDistances.Graft(GH_GraftMode.GraftAll);
-            ghBothSides.Graft(GH_GraftMode.GraftAll);
-            ghFlipNormals.Graft(GH_GraftMode.GraftAll);
-
             double docTollerance = DocumentTolerance();
+            #endregion
+
             GH_Structure<GH_Brep> ghSolidBreps = new GH_Structure<GH_Brep>();
+
             if (useParallel)
             {
                 this.Message = Constants.Constants.PARALLEL_MESSAGE;
@@ -202,17 +156,50 @@ namespace Bulldog3.Geometries
 
         }//end SolveInstance
 
-        
-
-        //private void CheckGetDataConversion(bool getData)
+        //private static GH_Structure<GH_Boolean> BoolDSFromBreps(GH_Structure<GH_Brep> inGhBreps, GH_Structure<GH_Boolean> inGhBool, GH_Structure<GH_Boolean> outGhBool)
         //{
-        //    if (!getData) ShowInputsError();
+        //    bool brepTopologyEqualBoolTopology = inGhBool.TopologyDescription.Equals(inGhBreps.TopologyDescription);
+        //    if (brepTopologyEqualBoolTopology)
+        //    {
+        //        outGhBool = inGhBool.Duplicate();
+        //    }
+        //    else
+        //    {
+        //        foreach (GH_Path ghPath in inGhBreps.Paths)
+        //        {
+        //            for (int i = 0; i < inGhBreps.get_Branch(ghPath).Count; i++)
+        //            {
+        //                outGhBool.Insert(inGhBool.get_LastItem(true), ghPath, i);
+        //            }
+        //        }
+        //    }
+
+        //    return outGhBool;
         //}
 
-        //private void ShowInputsError()
+        //private static GH_Structure<GH_Number> NumbersDSFromBreps(GH_Structure<GH_Brep> inGhBreps, GH_Structure<GH_Number> inGhNums, GH_Structure<GH_Number> outGhNums)
         //{
-        //    this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, Constants.Constants.INPUT_ERROR_MESSAGE);
+        //    bool brepTopologyEqualDistanceTopology = inGhNums.TopologyDescription.Equals(inGhBreps.TopologyDescription);
+        //    if (brepTopologyEqualDistanceTopology)
+        //    {
+        //        outGhNums = inGhNums.Duplicate();
+        //    }
+        //    else
+        //    {
+        //        foreach (GH_Path ghPath in inGhBreps.Paths)
+        //        {
+        //            for (int i = 0; i < inGhBreps.get_Branch(ghPath).Count; i++)
+        //            {
+        //                outGhNums.Insert(inGhNums.get_LastItem(true), ghPath, i);
+        //            }
+        //        }
+        //    }
+
+        //    return outGhNums;
         //}
+
+
+
 
         /// <summary>
         /// Provides an Icon for the component.

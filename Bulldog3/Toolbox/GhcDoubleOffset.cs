@@ -8,14 +8,14 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Toolbox
 {
-    public class GhcDoubleCurveOffset : GH_Component
+    public class GhcDoubleOffset : GH_Component
     {
         /// <summary>
         /// Initializes a new instance of the GhcDoubleCurveOffset class.
         /// </summary>
-        public GhcDoubleCurveOffset()
+        public GhcDoubleOffset()
           : base("Doubleoffset", "Doubleoffset",
-                "Make the offsett in both direction",
+                "Make the offset in both direction",
                 "Bulldog3", "Toolbox")
         {
         }
@@ -61,19 +61,19 @@ namespace Bulldog3.Toolbox
             bool areDistancesOk = DA.GetDataTree(1, out inDistances);
             inputChecker.CheckAndShowConversionError(areDistancesOk);
             GH_Structure<GH_Number> ghDistances = new GH_Structure<GH_Number>();
-            ghDistances = NumbersDataStructureFromCurves(ghCurves, inDistances, ghDistances);
+            ghDistances = ValuesAllocator.NumsDSFromCurves(ghCurves, inDistances, ghDistances);
 
             GH_Structure<GH_Plane> inPlanes = new GH_Structure<GH_Plane>();
             bool arePlanesOk = DA.GetDataTree(2, out inPlanes);
             inputChecker.CheckAndShowConversionError(arePlanesOk);
             GH_Structure<GH_Plane> ghPlanes = new GH_Structure<GH_Plane>();
-            ghPlanes = PlanesDataStructureFromCurves(ghCurves, inPlanes, ghPlanes);
+            ghPlanes = ValuesAllocator.PlanesDSFromCurves(ghCurves, inPlanes, ghPlanes);
 
             GH_Structure<GH_Integer> inCorners = new GH_Structure<GH_Integer>();
             bool areCornerssOk = DA.GetDataTree(3, out inCorners);
             inputChecker.CheckAndShowConversionError(areCornerssOk);
             GH_Structure<GH_Integer> ghCorners = new GH_Structure<GH_Integer>();
-            ghCorners = IntegerDataStructureFromCurves(ghCurves, inCorners, ghCorners);
+            ghCorners = ValuesAllocator.IntegerDSFromCurves(ghCurves, inCorners, ghCorners);
             #endregion
 
             GH_Structure<GH_Curve> ghCurveOffset = new GH_Structure<GH_Curve>();
@@ -112,69 +112,8 @@ namespace Bulldog3.Toolbox
             DA.SetDataTree(0, ghCurveOffset);
         }
 
-        private static GH_Structure<GH_Integer> IntegerDataStructureFromCurves(GH_Structure<GH_Curve> referenceGhCurves, GH_Structure<GH_Integer> inputIntegers, GH_Structure<GH_Integer> outputIntegers)
-        {
-            bool curvesTopoEqualCornersTopo = referenceGhCurves.TopologyDescription.Equals(inputIntegers.TopologyDescription);
-            if (curvesTopoEqualCornersTopo)
-            {
-                outputIntegers = inputIntegers.Duplicate();
-            }
-            else
-            {
-                foreach (GH_Path ghPath in referenceGhCurves.Paths)
-                {
-                    for (int i = 0; i < referenceGhCurves.get_Branch(ghPath).Count; i++)
-                    {
-                        outputIntegers.Insert(inputIntegers.get_LastItem(true), ghPath, i);
-                    }
-                }
-            }
 
-            return outputIntegers;
-        }
-
-        private static GH_Structure<GH_Plane> PlanesDataStructureFromCurves(GH_Structure<GH_Curve> referenceGhCurves, GH_Structure<GH_Plane> inputPlanes, GH_Structure<GH_Plane> outputPlanes)
-        {
-            bool planesTopoEqualCurvesTopo = referenceGhCurves.TopologyDescription.Equals(inputPlanes.TopologyDescription);
-            if (planesTopoEqualCurvesTopo)
-            {
-                outputPlanes = inputPlanes.Duplicate();
-            }
-            else
-            {
-                foreach (GH_Path ghPath in referenceGhCurves.Paths)
-                {
-                    for (int i = 0; i < referenceGhCurves.get_Branch(ghPath).Count; i++)
-                    {
-                        outputPlanes.Insert(inputPlanes.get_LastItem(true), ghPath, i);
-                    }
-                }
-            }
-
-            return outputPlanes;
-        }
-
-        private static GH_Structure<GH_Number> NumbersDataStructureFromCurves(GH_Structure<GH_Curve> referenceGhCurves, GH_Structure<GH_Number> inputNumbers, GH_Structure<GH_Number> outputDistances)
-        {
-            bool curvesTopoEqualDistancesTopo = referenceGhCurves.TopologyDescription.Equals(inputNumbers.TopologyDescription);
-
-            if (curvesTopoEqualDistancesTopo)
-            {
-                outputDistances = inputNumbers.Duplicate();
-            }
-            else
-            {
-                foreach (GH_Path ghPath in referenceGhCurves.Paths)
-                {
-                    for (int i = 0; i < referenceGhCurves.get_Branch(ghPath).Count; i++)
-                    {
-                        outputDistances.Insert(inputNumbers.get_LastItem(true), ghPath, i);
-                    }
-                }
-            }
-
-            return outputDistances;
-        }
+        
         #region helper methods
         private static void GetCornerStyle(ref int cornerStyleInInt, ref CurveOffsetCornerStyle cornerStyle)
         {
