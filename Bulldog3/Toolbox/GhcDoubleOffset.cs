@@ -51,7 +51,7 @@ namespace Bulldog3.Toolbox
             #region get Input From GH Canvas
             GH_Structure<GH_Curve> inCurves = new GH_Structure<GH_Curve>();
             bool areCurvesOK = DA.GetDataTree(0, out inCurves);
-            inputChecker.DisplayIfConversionFailed(areCurvesOK);
+            inputChecker.StopIfConversionIsFailed(areCurvesOK);
             GH_Structure<GH_Curve> ghCurves = new GH_Structure<GH_Curve>();
             ghCurves = inCurves.Duplicate();
             ghCurves.Graft(GH_GraftMode.GraftAll);
@@ -59,19 +59,19 @@ namespace Bulldog3.Toolbox
 
             GH_Structure<GH_Number> inDistances = new GH_Structure<GH_Number>();
             bool areDistancesOk = DA.GetDataTree(1, out inDistances);
-            inputChecker.DisplayIfConversionFailed(areDistancesOk);
+            inputChecker.StopIfConversionIsFailed(areDistancesOk);
             GH_Structure<GH_Number> ghDistances = new GH_Structure<GH_Number>();
             ghDistances = ValuesAllocator.NumsDSFromCurves(ghCurves, inDistances, ghDistances);
 
             GH_Structure<GH_Plane> inPlanes = new GH_Structure<GH_Plane>();
             bool arePlanesOk = DA.GetDataTree(2, out inPlanes);
-            inputChecker.DisplayIfConversionFailed(arePlanesOk);
+            inputChecker.StopIfConversionIsFailed(arePlanesOk);
             GH_Structure<GH_Plane> ghPlanes = new GH_Structure<GH_Plane>();
             ghPlanes = ValuesAllocator.PlanesDSFromCurves(ghCurves, inPlanes, ghPlanes);
 
             GH_Structure<GH_Integer> inCorners = new GH_Structure<GH_Integer>();
             bool areCornerssOk = DA.GetDataTree(3, out inCorners);
-            inputChecker.DisplayIfConversionFailed(areCornerssOk);
+            inputChecker.StopIfConversionIsFailed(areCornerssOk);
             GH_Structure<GH_Integer> ghCorners = new GH_Structure<GH_Integer>();
             ghCorners = ValuesAllocator.IntegerDSFromCurves(ghCurves, inCorners, ghCorners);
             #endregion

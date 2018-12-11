@@ -37,7 +37,7 @@ namespace Bulldog3.Dataviz3D
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.AddLineParameter("Lines", "Lines", "Histogram 3D lines", GH_ParamAccess.list);
-            pManager.AddColourParameter("Colours", "Colours", "Colours for each Line", GH_ParamAccess.list);
+            pManager.AddColourParameter("Colours", "col", "Colours for each Line", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -51,17 +51,17 @@ namespace Bulldog3.Dataviz3D
             #region GetInpuFromCanvas
             Surface inBaseSrf = null;
             bool canGetSurface = DA.GetData(0, ref inBaseSrf);
-            inputChecker.DisplayIfConversionFailed(canGetSurface);
+            inputChecker.StopIfConversionIsFailed(canGetSurface);
             inBaseSrf.SetDomain(0, new Interval(0.0, 1.0));
             inBaseSrf.SetDomain(1, new Interval(0.0, 1.0));
 
             List<double> inData = new List<double>();
             bool canGetData = DA.GetDataList(1, inData);
-            inputChecker.DisplayIfConversionFailed(canGetData);
+            inputChecker.StopIfConversionIsFailed(canGetData);
 
             List<Point3d> inBasePts = new List<Point3d>();
             bool canConvertPts = DA.GetDataList(2, inBasePts);
-            inputChecker.DisplayIfConversionFailed(canConvertPts);
+            inputChecker.StopIfConversionIsFailed(canConvertPts);
             ValuesAllocator.MatchLists(inData, inBasePts);
 
             Color inFirstColor = new Color();

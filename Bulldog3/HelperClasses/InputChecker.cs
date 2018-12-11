@@ -16,7 +16,7 @@ namespace Bulldog3.HelperClasses
             ghc = _ghc;
         }
 
-        public void DisplayIfConversionFailed(bool succesfullConversion)
+        public void StopIfConversionIsFailed(bool succesfullConversion)
         {
             if (!succesfullConversion)
             {

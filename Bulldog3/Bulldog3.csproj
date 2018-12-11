@@ -60,13 +60,14 @@
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Dataviz3D\GhcHistogramFromCurve.cs" />
     <Compile Include="Dataviz3D\GhcHistogramFromSurface.cs" />
+    <Compile Include="Dataviz3D\GhcPointsVisualizer.cs" />
     <Compile Include="Geometries\GhcDuplicateBorder.cs" />
     <Compile Include="Geometries\GhcCreateSolidPA.cs" />
     <Compile Include="Geometries\GhcMeshPatch.cs" />
     <Compile Include="HelperClasses\BrepBorderExtractor.cs" />
     <Compile Include="HelperClasses\InputChecker.cs" />
     <Compile Include="HelperClasses\Remapper.cs" />
-    <Compile Include="HelperClasses\SeriesFromLists.cs" />
+    <Compile Include="HelperClasses\SeriesFromObjectList.cs" />
     <Compile Include="HelperClasses\ValuesAllocator.cs" />
     <Compile Include="Optimization\GhcAdaptiveCurveSubD.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

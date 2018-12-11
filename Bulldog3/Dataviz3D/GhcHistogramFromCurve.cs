@@ -42,7 +42,7 @@ namespace Bulldog3.Dataviz3D
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.AddLineParameter("Lines", "Lines", "Histogram 3D lines", GH_ParamAccess.list);
-            pManager.AddColourParameter("Colours", "Colours", "Colours for each Line", GH_ParamAccess.list);
+            pManager.AddColourParameter("Colours", "col", "Colours for each Line", GH_ParamAccess.list);
         }
         /// <summary>
         /// 
@@ -64,16 +64,16 @@ namespace Bulldog3.Dataviz3D
             #region AssignInput
             Curve inCrv = null;
             bool canGetCrv = DA.GetData(0, ref inCrv);
-            inputChecker.DisplayIfConversionFailed(canGetCrv);
+            inputChecker.StopIfConversionIsFailed(canGetCrv);
             inCrv.Domain = new Interval(0, 1);
 
             List<double> inData = new List<double>();
             bool canGetData = DA.GetDataList(1, inData);
-            inputChecker.DisplayIfConversionFailed(canGetData);
+            inputChecker.StopIfConversionIsFailed(canGetData);
 
             List<double> inDataOptional = new List<double>();
             bool canGetDataOptional = DA.GetDataList(2, inDataOptional);
-            inputChecker.DisplayIfConversionFailed(canGetDataOptional);
+            inputChecker.StopIfConversionIsFailed(canGetDataOptional);
             if (inDataOptional.Count == 0)
             {
                 EqualCurveSubD(inData, inDataOptional);

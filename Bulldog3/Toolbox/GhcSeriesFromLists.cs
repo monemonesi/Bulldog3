@@ -51,7 +51,7 @@ namespace Bulldog3.Toolbox
                 DA.GetData(1, ref startingValue);
                 DA.GetData(2, ref stepSize);
 
-                List<double> series = SeriesFromLists.SeriesFromObjectLists(inReferenceList, startingValue, stepSize);
+                List<double> series = SeriesFromObjectList.SeriesFromObjectLists(inReferenceList, startingValue, stepSize);
                 DA.SetDataList(0, series);
             }
             else
