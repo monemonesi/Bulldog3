@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bulldog3.Models;
+using Bulldog3.HelperClasses;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;

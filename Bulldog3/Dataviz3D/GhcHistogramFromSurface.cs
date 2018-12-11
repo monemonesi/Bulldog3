@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Bulldog3.Models;
+using Bulldog3.HelperClasses;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 

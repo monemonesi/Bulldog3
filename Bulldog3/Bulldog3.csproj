@@ -63,11 +63,11 @@
     <Compile Include="Geometries\GhcDuplicateBorder.cs" />
     <Compile Include="Geometries\GhcCreateSolidPA.cs" />
     <Compile Include="Geometries\GhcMeshPatch.cs" />
-    <Compile Include="Models\BrepBorderExtractor.cs" />
-    <Compile Include="Models\InputChecker.cs" />
-    <Compile Include="Models\Remapper.cs" />
-    <Compile Include="Models\SeriesFromLists.cs" />
-    <Compile Include="Models\ValuesAllocator.cs" />
+    <Compile Include="HelperClasses\BrepBorderExtractor.cs" />
+    <Compile Include="HelperClasses\InputChecker.cs" />
+    <Compile Include="HelperClasses\Remapper.cs" />
+    <Compile Include="HelperClasses\SeriesFromLists.cs" />
+    <Compile Include="HelperClasses\ValuesAllocator.cs" />
     <Compile Include="Optimization\GhcAdaptiveCurveSubD.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Toolbox\GhcAnimateClippingPlane.cs" />

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Bulldog3.Models;
+using Bulldog3.HelperClasses;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Parameters;
 using Rhino;

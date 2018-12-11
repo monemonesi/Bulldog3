@@ -8,7 +8,7 @@ using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;
 using Rhino.Geometry;
 
-namespace Bulldog3.Models
+namespace Bulldog3.HelperClasses
 {
     class BrepBorderExtractor
     {

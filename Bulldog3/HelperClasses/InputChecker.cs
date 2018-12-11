@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bulldog3.Models
+namespace Bulldog3.HelperClasses
 {
     public class InputChecker
     {

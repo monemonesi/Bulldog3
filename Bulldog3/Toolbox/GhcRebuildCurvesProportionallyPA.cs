@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Bulldog3.Models;
+using Bulldog3.HelperClasses;
 using Bulldog3.Constants;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
