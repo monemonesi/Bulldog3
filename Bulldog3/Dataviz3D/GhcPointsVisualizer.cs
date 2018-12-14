@@ -97,7 +97,7 @@ namespace Bulldog3.Dataviz3D
                 int density = inDensity[i] > 0 ? inDensity[i] : 1;
                 double distance = maxRad / density;
                 double counter = distance;
-                while(counter <= maxRad)
+                while(counter < maxRad)
                 {
                     crvsOut.Add(new Circle(refPlane, inPts[i], counter));
                     counter += distance;
