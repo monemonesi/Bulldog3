@@ -100,7 +100,6 @@ namespace Bulldog3.Dataviz3D
                 while(counter < maxRad)
                 {
                     crvsOut.Add(new Circle(refPlane, inPts[i], counter));
-                    counter += distance;
 
                     int alpha = (int)Remapper.Map(counter, distance, maxRad, alphaStartDom, alphaEndDom);
                     int red = (int)Remapper.Map(counter, distance, maxRad, redStartDom, redEndDom);
@@ -109,6 +108,8 @@ namespace Bulldog3.Dataviz3D
 
                     Color color = Color.FromArgb(alpha, red, green, blue);
                     crvsColor.Add(color);
+
+                    counter += distance;
                 }
 
             }
