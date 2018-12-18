@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Bulldog3.HelperClasses
 {
+    /// <summary>
+    /// Check if the input of a given components can be elaborated and converted correctly
+    /// </summary>
     public class InputChecker
     {
         private GH_Component ghc;
@@ -16,6 +19,10 @@ namespace Bulldog3.HelperClasses
             ghc = _ghc;
         }
 
+        /// <summary>
+        /// Check if the convertion in succesful and call ShowInputsError if not.
+        /// </summary>
+        /// <param name="succesfullConversion"></param>
         public void StopIfConversionIsFailed(bool succesfullConversion)
         {
             if (!succesfullConversion)
@@ -25,6 +32,9 @@ namespace Bulldog3.HelperClasses
             }
         }
 
+        /// <summary>
+        /// Display the error message if the conversion failed
+        /// </summary>
         private void ShowInputsError()
         {
             ghc.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, Constants.Constants.INPUT_ERROR_MESSAGE);

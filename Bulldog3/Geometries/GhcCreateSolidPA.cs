@@ -10,6 +10,10 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Geometries
 {
+
+    /// <summary>
+    /// Quickly Create a solid Geometries from surfaces. It can work in parallel for high numbers of geometries
+    /// </summary>
     public class GhcCreateSolidPA : GH_Component
     {
         /// <summary>
@@ -27,10 +31,10 @@ namespace Bulldog3.Geometries
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddBrepParameter("B", "B", "Starting Brep for solid", GH_ParamAccess.tree);
-            pManager.AddNumberParameter("D", "D", "Distance", GH_ParamAccess.tree, 1);
+            pManager.AddBrepParameter("B", "Brep", "Starting Brep for solid", GH_ParamAccess.tree);
+            pManager.AddNumberParameter("D", "Dist", "Distance", GH_ParamAccess.tree, 1);
             pManager.AddBooleanParameter("bS", "bS", "Both sides", GH_ParamAccess.tree, false);
-            pManager.AddBooleanParameter("f", "f", "flip normal?", GH_ParamAccess.tree, false);
+            pManager.AddBooleanParameter("f", "flip", "flip normal?", GH_ParamAccess.tree, false);
             pManager.AddBooleanParameter("||", "||", "Use Parallel", GH_ParamAccess.item, false);
         }
 
@@ -39,7 +43,7 @@ namespace Bulldog3.Geometries
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddBrepParameter("B", "B", "Solid from surface Or Surfaces", GH_ParamAccess.tree);
+            pManager.AddBrepParameter("B", "Brep", "Resulding solid(s)", GH_ParamAccess.tree);
         }
 
         /// <summary>
@@ -151,55 +155,13 @@ namespace Bulldog3.Geometries
                     }
                 }
             }//End Serial Computation
+
+            #region SendDataToCanvas
             ghSolidBreps.Simplify(GH_SimplificationMode.CollapseAllOverlaps);
             DA.SetDataTree(0, ghSolidBreps);
+            #endregion
 
         }//end SolveInstance
-
-        //private static GH_Structure<GH_Boolean> BoolDSFromBreps(GH_Structure<GH_Brep> inGhBreps, GH_Structure<GH_Boolean> inGhBool, GH_Structure<GH_Boolean> outGhBool)
-        //{
-        //    bool brepTopologyEqualBoolTopology = inGhBool.TopologyDescription.Equals(inGhBreps.TopologyDescription);
-        //    if (brepTopologyEqualBoolTopology)
-        //    {
-        //        outGhBool = inGhBool.Duplicate();
-        //    }
-        //    else
-        //    {
-        //        foreach (GH_Path ghPath in inGhBreps.Paths)
-        //        {
-        //            for (int i = 0; i < inGhBreps.get_Branch(ghPath).Count; i++)
-        //            {
-        //                outGhBool.Insert(inGhBool.get_LastItem(true), ghPath, i);
-        //            }
-        //        }
-        //    }
-
-        //    return outGhBool;
-        //}
-
-        //private static GH_Structure<GH_Number> NumbersDSFromBreps(GH_Structure<GH_Brep> inGhBreps, GH_Structure<GH_Number> inGhNums, GH_Structure<GH_Number> outGhNums)
-        //{
-        //    bool brepTopologyEqualDistanceTopology = inGhNums.TopologyDescription.Equals(inGhBreps.TopologyDescription);
-        //    if (brepTopologyEqualDistanceTopology)
-        //    {
-        //        outGhNums = inGhNums.Duplicate();
-        //    }
-        //    else
-        //    {
-        //        foreach (GH_Path ghPath in inGhBreps.Paths)
-        //        {
-        //            for (int i = 0; i < inGhBreps.get_Branch(ghPath).Count; i++)
-        //            {
-        //                outGhNums.Insert(inGhNums.get_LastItem(true), ghPath, i);
-        //            }
-        //        }
-        //    }
-
-        //    return outGhNums;
-        //}
-
-
-
 
         /// <summary>
         /// Provides an Icon for the component.

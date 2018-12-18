@@ -10,7 +10,10 @@ using Rhino.Geometry;
 
 namespace Bulldog3.HelperClasses
 {
-    class BrepBorderExtractor
+    /// <summary>
+    /// Generate joined border of breps` faces
+    /// </summary>
+    public static class BrepBorderExtractor
     {
         public static List<Curve> GetJoined(Brep brep)
         {

@@ -9,6 +9,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Geometries
 {
+    /// <summary>
+    /// Quicly create a mesh patch between closed polylines. It uses parallel computation
+    /// </summary>
     public class GhcMeshPatch : GH_Component
     {
         /// <summary>

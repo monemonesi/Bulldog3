@@ -9,6 +9,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Geometries
 {
+    /// <summary>
+    /// When it is possible it creates a unique polycurve with surface borders
+    /// </summary>
     public class GhcDuplicateBorder : GH_Component
     {
         /// <summary>
@@ -26,7 +29,7 @@ namespace Bulldog3.Geometries
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddBrepParameter("Brep", "B", "Brep", GH_ParamAccess.list);
+            pManager.AddBrepParameter("Brep", "Brep", "Brep", GH_ParamAccess.list);
         }
 
         /// <summary>
