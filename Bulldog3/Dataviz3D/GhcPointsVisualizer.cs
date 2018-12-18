@@ -7,6 +7,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Dataviz3D
 {
+    /// <summary>
+    /// This class creates a data visualization for a set of points
+    /// </summary>
     public class GhcPointsVisualizer : GH_Component
     {
         /// <summary>
@@ -49,7 +52,8 @@ namespace Bulldog3.Dataviz3D
         {
             InputChecker inputChecker = new InputChecker(this);
 
-            #region AssignInputs
+            #region GetInputsFromCanvas
+
             List<Point3d> inPts = new List<Point3d>();
             bool canGetPts = DA.GetDataList(0, inPts);
             inputChecker.StopIfConversionIsFailed(canGetPts);
@@ -81,15 +85,6 @@ namespace Bulldog3.Dataviz3D
             List<Circle> crvsOut = new List<Circle>();
             List<Color> crvsColor = new List<Color>();
 
-            int alphaStartDom = inFirstColor.A;
-            int alphaEndDom = inSecondColor.A;
-            int redStartDom = inFirstColor.R;
-            int redEndDom = inSecondColor.R;
-            int blueStartDom = inFirstColor.B;
-            int blueEndDom = inSecondColor.B;
-            int greenStartDom = inFirstColor.G;
-            int greenEndDom = inSecondColor.G;
-
             for (int i = 0; i < inPts.Count; i++)
             {
                 Plane refPlane = inPlanes[i];
@@ -101,12 +96,7 @@ namespace Bulldog3.Dataviz3D
                 {
                     crvsOut.Add(new Circle(refPlane, inPts[i], counter));
 
-                    int alpha = (int)Remapper.Map(counter, distance, maxRad, alphaStartDom, alphaEndDom);
-                    int red = (int)Remapper.Map(counter, distance, maxRad, redStartDom, redEndDom);
-                    int green = (int)Remapper.Map(counter, distance, maxRad, greenStartDom, greenEndDom);
-                    int blue = (int)Remapper.Map(counter, distance, maxRad, blueStartDom, blueEndDom);
-
-                    Color color = Color.FromArgb(alpha, red, green, blue);
+                    Color color = ColorRemapper.RemappedColor(ref inFirstColor, ref inSecondColor, maxRad, distance, counter);
                     crvsColor.Add(color);
 
                     counter += distance;
@@ -115,6 +105,7 @@ namespace Bulldog3.Dataviz3D
             }
 
             #region SendOutputsToCanvas
+
             DA.SetDataList(0, crvsOut);
             DA.SetDataList(1, crvsColor);
 

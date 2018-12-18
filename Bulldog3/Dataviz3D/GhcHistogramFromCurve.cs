@@ -10,6 +10,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Dataviz3D
 {
+    /// <summary>
+    /// This class creates a 3D histogramlike Data Visualization style from a 3D curve and a set of Data
+    /// </summary>
     public class GhcHistogramFromCurve : GH_Component
     {
         /// <summary>
@@ -101,15 +104,6 @@ namespace Bulldog3.Dataviz3D
             List<Line> histogramLines = new List<Line>();
             List<Color> histogramColors = new List<Color>();
 
-            int alphaStartDom = inFirstColor.A;
-            int alphaEndDom = inSecondColor.A;
-            int redStartDom = inFirstColor.R;
-            int redEndDom = inSecondColor.R;
-            int blueStartDom = inFirstColor.B;
-            int blueEndDom = inSecondColor.B;
-            int greenStartDom = inFirstColor.G;
-            int greenEndDom = inSecondColor.G;
-
             for (int i = 0; i < inData.Count; i++)
             {
                 Plane pFrame;
@@ -124,12 +118,7 @@ namespace Bulldog3.Dataviz3D
                 Line line = new Line(pFrame.Origin, pFrame.YAxis, dataVal);
                 histogramLines.Add(line);
 
-                int alpha = (int)Remapper.Map(dataVal, refStartDomain, refEndDomain, alphaStartDom, alphaEndDom);
-                int red = (int)Remapper.Map(dataVal, refStartDomain, refEndDomain, redStartDom, redEndDom);
-                int green = (int)Remapper.Map(dataVal, refStartDomain, refEndDomain, greenStartDom, greenEndDom);
-                int blue = (int)Remapper.Map(dataVal, refStartDomain, refEndDomain, blueStartDom, blueEndDom);
-
-                Color color = Color.FromArgb(alpha, red, green, blue);
+                Color color = ColorRemapper.RemappedColor(ref inFirstColor, ref inSecondColor, refEndDomain, refStartDomain, dataVal);
                 histogramColors.Add(color);
             }
 

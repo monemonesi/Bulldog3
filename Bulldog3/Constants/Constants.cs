@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Bulldog3.Constants
 {
+    /// <summary>
+    /// This class contains all the constants value used for the open source library
+    /// </summary>
+
      public static class Constants
     {
         public const string INPUT_ERROR_MESSAGE = "Check your input buddy";
