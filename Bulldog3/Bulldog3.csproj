@@ -66,6 +66,7 @@
     <Compile Include="Geometries\GhcMeshPatch.cs" />
     <Compile Include="HelperClasses\BrepBorderExtractor.cs" />
     <Compile Include="HelperClasses\ColorRemapper.cs" />
+    <Compile Include="HelperClasses\CurvesOptimizer.cs" />
     <Compile Include="HelperClasses\InputChecker.cs" />
     <Compile Include="HelperClasses\Remapper.cs" />
     <Compile Include="HelperClasses\SeriesFromObjectList.cs" />
