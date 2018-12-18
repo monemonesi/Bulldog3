@@ -8,6 +8,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Toolbox
 {
+    /// <summary>
+    /// Transform a GH_Plane to  Rhino clipping Plane
+    /// </summary>
     public class GhcCreateClippingPlane : GH_Component
     {
         /// <summary>

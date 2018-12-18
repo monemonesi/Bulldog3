@@ -9,6 +9,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Toolbox
 {
+    /// <summary>
+    /// Define points` center of mass
+    /// </summary>
     public class GhcCenterOfMass : GH_Component
     {
         /// <summary>

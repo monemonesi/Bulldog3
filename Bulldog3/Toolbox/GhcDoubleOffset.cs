@@ -8,6 +8,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Toolbox
 {
+    /// <summary>
+    /// Generate curves` offest in both directions
+    /// </summary>
     public class GhcDoubleOffset : GH_Component
     {
         /// <summary>
@@ -15,7 +18,7 @@ namespace Bulldog3.Toolbox
         /// </summary>
         public GhcDoubleOffset()
           : base("Doubleoffset", "Doubleoffset",
-                "Make the offset in both direction",
+                "Generate the offset in both direction",
                 "Bulldog3", "Toolbox")
         {
         }
@@ -25,10 +28,10 @@ namespace Bulldog3.Toolbox
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddCurveParameter("Curves", "C", "Curve to offset", GH_ParamAccess.tree);
-            pManager.AddNumberParameter("Distance", "D", "Offsett Distance", GH_ParamAccess.tree, 1);
-            pManager.AddPlaneParameter("Planes", "P", "reference plane", GH_ParamAccess.tree, Plane.WorldXY);
-            pManager.AddIntegerParameter("Corners", "C", "corner type", GH_ParamAccess.tree, 1);
+            pManager.AddCurveParameter("Curves", "Crv", "Curve to offset", GH_ParamAccess.tree);
+            pManager.AddNumberParameter("Distance", "Dist", "Offsett Distance", GH_ParamAccess.tree, 1);
+            pManager.AddPlaneParameter("Planes", "Pln", "reference plane", GH_ParamAccess.tree, Plane.WorldXY);
+            pManager.AddIntegerParameter("Corners", "Cor", "corner type", GH_ParamAccess.tree, 1);
 
         }
 
@@ -37,7 +40,7 @@ namespace Bulldog3.Toolbox
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddCurveParameter("Curves", "C", "Curves", GH_ParamAccess.tree);
+            pManager.AddCurveParameter("Curves", "Crv", "Curves", GH_ParamAccess.tree);
         }
 
         /// <summary>
@@ -86,7 +89,7 @@ namespace Bulldog3.Toolbox
                 {
                     CurveOffsetCornerStyle cornerStyle = CurveOffsetCornerStyle.None;
                     int cornerStyleInInt = ghCorners.get_DataItem(ghPath, i).Value;
-                    GetCornerStyle(ref cornerStyleInInt, ref cornerStyle);
+                    GetCornerStyleFromInt(ref cornerStyleInInt, ref cornerStyle);
 
                     Curve crv = ghCurves.get_DataItem(ghPath, i).Value;
                     Plane plane = ghPlanes.get_DataItem(ghPath, i).Value;
@@ -115,7 +118,12 @@ namespace Bulldog3.Toolbox
 
         
         #region helper methods
-        private static void GetCornerStyle(ref int cornerStyleInInt, ref CurveOffsetCornerStyle cornerStyle)
+        /// <summary>
+        /// Translate integeres to CornerStyle
+        /// </summary>
+        /// <param name="cornerStyleInInt"></param>
+        /// <param name="cornerStyle"></param>
+        private static void GetCornerStyleFromInt(ref int cornerStyleInInt, ref CurveOffsetCornerStyle cornerStyle)
         {
             if (cornerStyleInInt < 0)
                 cornerStyleInInt = 0;
@@ -141,6 +149,7 @@ namespace Bulldog3.Toolbox
             }
         }
         #endregion
+        
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>

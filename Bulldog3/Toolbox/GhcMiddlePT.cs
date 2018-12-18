@@ -7,6 +7,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Toolbox
 {
+    /// <summary>
+    /// FInd hte middle points of curves and some of its data
+    /// </summary>
     public class GhcMiddlePT : GH_Component
     {
         /// <summary>

@@ -6,6 +6,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Toolbox
 {
+    /// <summary>
+    /// Highlight and potentially close open curves
+    /// </summary>
     public class GhcCloseOpenCurves : GH_Component
     {
         /// <summary>
@@ -45,19 +48,23 @@ namespace Bulldog3.Toolbox
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            InputChecker inputChecker = new InputChecker(this);
+
+            #region getDataFromCanvas
             List<Curve> inCurves = new List<Curve>();
-            if (!DA.GetDataList(0, inCurves))
-                return;
+            bool canGetCurves = DA.GetDataList(0, inCurves);
+            inputChecker.StopIfConversionIsFailed(canGetCurves);
 
             List<int> inClosingTypes = new List<int>();
-            if (!DA.GetDataList(1, inClosingTypes))
-                return;
+            bool canGetClosingType = DA.GetDataList(1, inClosingTypes);
+            inputChecker.StopIfConversionIsFailed(canGetClosingType);
             ValuesAllocator.MatchLists(inCurves, inClosingTypes);
 
             List<double> inTollerances = new List<double>();
-            if (!DA.GetDataList(2, inTollerances))
-                return;
+            bool canGetTollerances = DA.GetDataList(2, inTollerances);
+            inputChecker.StopIfConversionIsFailed(canGetTollerances);
             ValuesAllocator.MatchLists(inCurves, inTollerances);
+            #endregion
 
             List<Point3d> endPoints = new List<Point3d>();
             List<Curve> closedCurves = new List<Curve>();
@@ -75,14 +82,14 @@ namespace Bulldog3.Toolbox
                 {
                     if(inClosingTypes[i] <= 0)
                     {
-                        CloseCrvAddingLine(inTollerances, endPoints, closedCurves, closingResults, i, crv);
+                        CurveAnalyzer.CloseCrvAddingLine(inTollerances, endPoints, closedCurves, closingResults, i, crv);
                     }
                     else if (inClosingTypes[i]>=1)
                     {
                         bool success = crv.MakeClosed(inTollerances[i]);
                         if (!success)
                         {
-                            List<Point3d> endPts = GetEndPtsFromOpenCurve(crv);
+                            List<Point3d> endPts = CurveAnalyzer.GetEndPtsFromOpenCurve(crv);
                             endPoints.AddRange(endPts);
                             closedCurves.Add(null);
                         }
@@ -103,48 +110,6 @@ namespace Bulldog3.Toolbox
             DA.SetDataList(2, closingResults);
         }
 
-        private static void CloseCrvAddingLine( List<double> inTollerances, List<Point3d> endPoints, List<Curve> closedCurves, List<bool> closingResults, int i, Curve crv)
-        {
-            bool succes = false;
-            Curve finalClosedCrv = null;
-
-            List<Point3d> endPts = GetEndPtsFromOpenCurve(crv);
-            if (endPts[0].DistanceTo(endPts[1]) <= inTollerances[i])
-            {
-                List<Curve> joinedCurves = CreateJoinedCurves(crv, endPts);
-                if (joinedCurves[0].IsClosed && joinedCurves.Count == 1)
-                {
-                    succes = true;
-                    finalClosedCrv = joinedCurves[0];
-                }
-            }
-
-            closedCurves.Add(finalClosedCrv);
-            closingResults.Add(succes);
-            if (!succes)
-            {
-                endPoints.AddRange(endPts);
-            }
-        }
-
-        private static List<Curve> CreateJoinedCurves(Curve crv, List<Point3d> localEndPts)
-        {
-            Curve addedCurve = Curve.CreateInterpolatedCurve(localEndPts, 1);
-            List<Curve> curvesToJoin = new List<Curve> { crv, addedCurve };
-            List<Curve> joinedCurves = new List<Curve>(Curve.JoinCurves(curvesToJoin));
-            return joinedCurves;
-        }
-
-
-        private static List<Point3d> GetEndPtsFromOpenCurve(Curve inCurve)
-        {
-            List<Point3d> nonClosedCrvPts = new List<Point3d>
-                            {
-                                inCurve.PointAtStart,
-                                inCurve.PointAtEnd
-                            };
-            return nonClosedCrvPts;
-        }
 
         /// <summary>
         /// Provides an Icon for the component.

@@ -6,6 +6,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Toolbox
 {
+    /// <summary>
+    /// GH component to generate a series from a list of objects
+    /// </summary>
     public class GhcSeriesFromLists : GH_Component
     {
         /// <summary>
@@ -42,22 +45,21 @@ namespace Bulldog3.Toolbox
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            List<object> inReferenceList = new List<object>();
-            bool success = DA.GetDataList(0, inReferenceList);
-            if(success)
-            {
-                double startingValue = 0;
-                double stepSize = 1;
-                DA.GetData(1, ref startingValue);
-                DA.GetData(2, ref stepSize);
 
-                List<double> series = SeriesFromObjectList.SeriesFromObjectLists(inReferenceList, startingValue, stepSize);
-                DA.SetDataList(0, series);
-            }
-            else
-            {
-                this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, Constants.Constants.INPUT_ERROR_MESSAGE);
-            }
+            InputChecker inputChecker = new InputChecker(this);
+
+            List<object> inReferenceList = new List<object>();
+            bool canGetList = DA.GetDataList(0, inReferenceList);
+            inputChecker.StopIfConversionIsFailed(canGetList);
+
+            double startingValue = 0;
+            double stepSize = 1;
+            DA.GetData(1, ref startingValue);
+            DA.GetData(2, ref stepSize);
+
+            List<double> series = SeriesFromObjectList.SeriesFromObjectLists(inReferenceList, startingValue, stepSize);
+            DA.SetDataList(0, series);
+
         }
 
         /// <summary>

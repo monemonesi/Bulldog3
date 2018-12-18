@@ -7,6 +7,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Toolbox
 {
+    /// <summary>
+    /// Move an existing clipping plane: It can be use for quikly generate dynamic sections
+    /// </summary>
     public class GhcAnimateClippingPlane : GH_Component
     {
         /// <summary>
@@ -61,9 +64,6 @@ namespace Bulldog3.Toolbox
 
                 clippingPlane.CommitChanges();
             }
-
-            
-
 
             DA.SetData(0, updatedPlane);
         }

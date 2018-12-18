@@ -6,6 +6,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Toolbox
 {
+    /// <summary>
+    /// Gh componenet to unify the direction of planar curves
+    /// </summary>
     public class GhcUnifyCurvesDirection : GH_Component
     {
         /// <summary>
@@ -23,8 +26,8 @@ namespace Bulldog3.Toolbox
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddCurveParameter("Curves", "c", "Closed planar curves to be uniformed", GH_ParamAccess.list);
-            pManager.AddPlaneParameter("Planes", "P", "Reference plane", GH_ParamAccess.list, Plane.WorldXY);
+            pManager.AddCurveParameter("Curves", "crv", "Closed planar curves to be uniformed", GH_ParamAccess.list);
+            pManager.AddPlaneParameter("Planes", "Pln", "Reference plane", GH_ParamAccess.list, Plane.WorldXY);
         }
 
         /// <summary>
@@ -32,7 +35,7 @@ namespace Bulldog3.Toolbox
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddCurveParameter("Oriented Curves", "c", "Oriented Curves", GH_ParamAccess.list);
+            pManager.AddCurveParameter("Oriented Curves", "crv", "Oriented Curves", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -41,11 +44,17 @@ namespace Bulldog3.Toolbox
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            InputChecker inputChecker = new InputChecker(this);
+
             List<Curve> inCurves = new List<Curve>();
-            DA.GetDataList<Curve>("Curves", inCurves);
+            bool canGetCrvs = DA.GetDataList<Curve>("Curves", inCurves);
+            inputChecker.StopIfConversionIsFailed(canGetCrvs);
+
             List<Plane> inPlanes = new List<Plane>();
-            DA.GetDataList<Plane>("Planes", inPlanes);
+            bool canGetPlanes = DA.GetDataList<Plane>("Planes", inPlanes);
+            inputChecker.StopIfConversionIsFailed(canGetPlanes);
             ValuesAllocator.MatchLists(inCurves, inPlanes);
+
             List<Curve> orientedCurves = new List<Curve>();
             for (int i = 0; i < inCurves.Count; i++)
             {

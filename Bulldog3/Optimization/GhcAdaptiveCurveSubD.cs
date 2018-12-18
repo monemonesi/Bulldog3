@@ -7,7 +7,7 @@ using Rhino.Geometry;
 namespace Bulldog3.Optimization
 {
     /// <summary>
-    /// Subdive a given curve using De Casteljau`s algorithm
+    /// Subdivide a given curve using De Casteljau`s algorithm
     /// </summary>
     public class GhcAdaptiveCurveSubD : GH_Component
     {

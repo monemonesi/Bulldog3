@@ -7,8 +7,11 @@ using Bulldog3.Constants;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 
-namespace Bulldog3.Toolbox
+namespace Bulldog3.Optimization
 {
+    /// <summary>
+    /// GH component to proportionally rebuild Curves based on their control points number
+    /// </summary>
     public class GhcRebuildCurvesProportionallyPA : GH_Component
     {
         /// <summary>
@@ -17,7 +20,7 @@ namespace Bulldog3.Toolbox
         public GhcRebuildCurvesProportionallyPA()
           : base("RebuildCurveProportionally", "Rebuild",
                 "Rebuild curve proportionally to its control points number",
-                "Bulldog3", "Toolbox")
+                "Bulldog3", "Optimization")
         {
         }
 
@@ -26,10 +29,10 @@ namespace Bulldog3.Toolbox
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddCurveParameter("Curve", "C", "Curve to simplify", GH_ParamAccess.list);
-            pManager.AddIntegerParameter("Degree", "D", "Optional degree of curve (if omitted, input degree is used)", GH_ParamAccess.list, -1);
+            pManager.AddCurveParameter("Curve", "Crv", "Curve to simplify", GH_ParamAccess.list);
+            pManager.AddIntegerParameter("Degree", "Dist", "Optional degree of curve (if omitted, input degree is used)", GH_ParamAccess.list, -1);
             pManager.AddNumberParameter("Rebuilding factor", "%", "rebuilding factor [0-1]", GH_ParamAccess.list, 0.5);
-            pManager.AddBooleanParameter("Preserve end Tangent", "T", "preserve curve end tangents", GH_ParamAccess.list, false);
+            pManager.AddBooleanParameter("Preserve end Tangent", "Tan", "preserve curve end tangents", GH_ParamAccess.list, false);
             pManager.AddBooleanParameter("||", "||", "Use Parallel", GH_ParamAccess.item, false);
         }
 
@@ -38,7 +41,7 @@ namespace Bulldog3.Toolbox
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddCurveParameter("Curve", "C", "Simplified curve", GH_ParamAccess.list);
+            pManager.AddCurveParameter("Curve", "Crv", "Simplified curve", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -47,23 +50,31 @@ namespace Bulldog3.Toolbox
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            InputChecker inputChecker = new InputChecker(this);
+
+            #region GetDataFromCanvas
             List<Curve> inCurves = new List<Curve>();
-            if (!DA.GetDataList<Curve>(0, inCurves)) return;
+            bool canGetCurves = DA.GetDataList<Curve>(0, inCurves);
+            inputChecker.StopIfConversionIsFailed(canGetCurves);
 
             List<int> inCurvesDegree = new List<int>();
-            if (!DA.GetDataList<int>(1, inCurvesDegree)) return;
+            bool canGetCrvDegrees = DA.GetDataList<int>(1, inCurvesDegree);
+            inputChecker.StopIfConversionIsFailed(canGetCrvDegrees);
             ValuesAllocator.MatchLists(inCurves, inCurvesDegree);
 
             List<double> inRebuildFactors = new List<double>();
-            if (!DA.GetDataList<double>(2, inRebuildFactors)) return;
+            bool canGetFactors = DA.GetDataList<double>(2, inRebuildFactors);
+            inputChecker.StopIfConversionIsFailed(canGetFactors);
             ValuesAllocator.MatchLists(inCurves, inRebuildFactors);
 
             List<bool> inPreserveTan = new List<bool>();
-            if (!DA.GetDataList<bool>(3, inPreserveTan)) return;
+            bool canGetPreserveTan = DA.GetDataList<bool>(3, inPreserveTan);
+            inputChecker.StopIfConversionIsFailed(canGetPreserveTan);
             ValuesAllocator.MatchLists(inCurves, inPreserveTan);
 
             bool useParallel = false;
             DA.GetData<bool>(4, ref useParallel);
+            #endregion
 
             Curve[] curves = inCurves.ToArray();
             int[] curvesDegree = inCurvesDegree.ToArray();
@@ -75,7 +86,7 @@ namespace Bulldog3.Toolbox
                 this.Message = Constants.Constants.SERIAL_MESSAGE;
                 for (int i = 0; i < (int)curves.Length; i++)
                 {
-                    RebuildTheCurves(i, curves, curvesDegree, rebuildFactors, preserveTan, rebuildedCurves);
+                    CurvesOptimizer.RebuildProportionally(i, curves, curvesDegree, rebuildFactors, preserveTan, rebuildedCurves);
                 }
             }
             else
@@ -85,9 +96,9 @@ namespace Bulldog3.Toolbox
 
                 int processorCount = Environment.ProcessorCount - 1;;
                 Parallel.For(0, curves.Length, new ParallelOptions{ MaxDegreeOfParallelism = processorCount },
-                    i => {
-                        RebuildTheCurves(i, curves, curvesDegree, rebuildFactors, preserveTan, rebuildedCurves);
-                    });
+                    i => 
+                        CurvesOptimizer.RebuildProportionally(i, curves, curvesDegree, rebuildFactors, preserveTan, rebuildedCurves)
+                    );
             }
             List<Curve> curves1 = new List<Curve>();
             curves1.AddRange(rebuildedCurves.Values);
@@ -97,18 +108,6 @@ namespace Bulldog3.Toolbox
 
         }
 
-        private void RebuildTheCurves(int i, Curve[] startingCurves, int[] startingDegrees, double[] reductionFactors, bool[] preserveTangents, ConcurrentDictionary<int, Curve> rebuildedCurves)
-        {
-            NurbsCurve startingNCurve = startingCurves[i].ToNurbsCurve();
-            int startingControlPointCount = startingNCurve.Points.Count;
-            int newControlPointCount = Convert.ToInt32((double)startingControlPointCount * reductionFactors[i]);
-            if (startingDegrees[i] < 0)
-            {
-                startingDegrees[i] = startingNCurve.Degree;
-            }
-            NurbsCurve rebuildedCurve = startingNCurve.Rebuild(newControlPointCount, startingDegrees[i], preserveTangents[i]);
-            rebuildedCurves[i] = rebuildedCurve;
-        }
 
         /// <summary>
         /// Provides an Icon for the component.

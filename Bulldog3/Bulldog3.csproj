@@ -66,6 +66,7 @@
     <Compile Include="Geometries\GhcMeshPatch.cs" />
     <Compile Include="HelperClasses\BrepBorderExtractor.cs" />
     <Compile Include="HelperClasses\ColorRemapper.cs" />
+    <Compile Include="HelperClasses\CurveAnalyzer.cs" />
     <Compile Include="HelperClasses\CurvesOptimizer.cs" />
     <Compile Include="HelperClasses\InputChecker.cs" />
     <Compile Include="HelperClasses\Remapper.cs" />
@@ -79,7 +80,7 @@
     <Compile Include="Toolbox\GhcCreateClippingPlane.cs" />
     <Compile Include="Toolbox\GhcDoubleOffset.cs" />
     <Compile Include="Toolbox\GhcMiddlePT.cs" />
-    <Compile Include="Toolbox\GhcRebuildCurvesProportionallyPA.cs" />
+    <Compile Include="Optimization\GhcRebuildCurvesProportionallyPA.cs" />
     <Compile Include="Toolbox\GhcSeriesFromLists.cs" />
     <Compile Include="Toolbox\GhcUnifyCurvesDirection.cs" />
   </ItemGroup>
