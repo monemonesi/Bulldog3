@@ -5,7 +5,7 @@ using Grasshopper.Kernel;
 using Rhino;
 using Rhino.Geometry;
 
-namespace Bulldog3.Toolbox
+namespace Bulldog3.CPlane
 {
     /// <summary>
     /// Move an existing clipping plane: It can be use for quikly generate dynamic sections
@@ -18,7 +18,7 @@ namespace Bulldog3.Toolbox
         public GhcAnimateClippingPlane()
           : base("AnimateClippingPlane", "AnimateClippingPlane",
               "move an existing clipping plane to a new position",
-              "Bulldog3", "CpPlane")
+              "Bulldog3", "CPlane")
         {
         }
 

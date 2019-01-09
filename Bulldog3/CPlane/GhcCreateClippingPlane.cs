@@ -6,7 +6,7 @@ using Rhino;
 using Rhino.Display;
 using Rhino.Geometry;
 
-namespace Bulldog3.Toolbox
+namespace Bulldog3.CPlane
 {
     /// <summary>
     /// Transform a GH_Plane to  Rhino clipping Plane
@@ -19,7 +19,7 @@ namespace Bulldog3.Toolbox
         public GhcCreateClippingPlane()
           : base("CreateClippingPlane", "CreateClippingPlane",
               "Transform a simple GH plane in clipping Plane:",
-              "Bulldog3", "CpPlane")
+              "Bulldog3", "CPlane")
         {
         }
 

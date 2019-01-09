@@ -14,7 +14,7 @@ namespace Bulldog3.HelperClasses
     /// </summary>
     public static class ValuesAllocator
     {
-        #region AllocateTolists
+        #region AllocateToLists
         /// <summary>
         /// If two lists are not matching calls AssignFromListsToLists to solve
         /// </summary>
