@@ -10,7 +10,7 @@ namespace Bulldog3.HelperClasses
     /// <summary>
     /// This class hosts a collection of analysis methods for 3D curves
     /// </summary>
-    public static class CurveAnalyzer
+    public static class CurveProcessor
     {
         /// <summary>
         /// Close an open curve by adding a line
@@ -26,7 +26,7 @@ namespace Bulldog3.HelperClasses
             bool succes = false;
             Curve finalClosedCrv = null;
 
-            List<Point3d> endPts = CurveAnalyzer.GetEndPtsFromOpenCurve(crv);
+            List<Point3d> endPts = CurveProcessor.GetEndPtsFromOpenCurve(crv);
             if (endPts[0].DistanceTo(endPts[1]) <= inTollerances[i])
             {
                 List<Curve> joinedCurves = CreateJoinedCurves(crv, endPts);
@@ -73,6 +73,27 @@ namespace Bulldog3.HelperClasses
                                 inCurve.PointAtEnd
                             };
             return endPts;
+        }
+
+        /// <summary>
+        /// Cull the curves shorter then a given threshold
+        /// </summary>
+        /// <param name="inCurves"></param>
+        /// <param name="inThres"></param>
+        /// <returns></returns>
+        public static List<Curve> CullShortCrv(List<Curve> inCurves, List<double> inThres)
+        {
+            List<Curve> culledCrvs = new List<Curve>();
+
+            for (int i = 0; i < inCurves.Count; i++)
+            {
+                if (inCurves[i].GetLength() > inThres[i])
+                {
+                    culledCrvs.Add(inCurves[i]);
+                }
+            }
+
+            return culledCrvs;
         }
     }
 }

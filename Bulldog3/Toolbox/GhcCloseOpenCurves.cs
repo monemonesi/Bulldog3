@@ -82,14 +82,14 @@ namespace Bulldog3.Toolbox
                 {
                     if(inClosingTypes[i] <= 0)
                     {
-                        CurveAnalyzer.CloseCrvAddingLine(inTollerances, endPoints, closedCurves, closingResults, i, crv);
+                        CurveProcessor.CloseCrvAddingLine(inTollerances, endPoints, closedCurves, closingResults, i, crv);
                     }
                     else if (inClosingTypes[i]>=1)
                     {
                         bool success = crv.MakeClosed(inTollerances[i]);
                         if (!success)
                         {
-                            List<Point3d> endPts = CurveAnalyzer.GetEndPtsFromOpenCurve(crv);
+                            List<Point3d> endPts = CurveProcessor.GetEndPtsFromOpenCurve(crv);
                             endPoints.AddRange(endPts);
                             closedCurves.Add(null);
                         }
