@@ -44,6 +44,18 @@ namespace Bulldog3.Fields
         {
             InputChecker inputChecker = new InputChecker(this);
 
+            #region GetInputFromCanvas
+
+            List<Point3d> inPts = new List<Point3d>();
+            bool canGetPts = DA.GetDataList(0, inPts);
+            inputChecker.StopIfConversionIsFailed(canGetPts);
+
+            List<Curve> inCurves = new List<Curve>();
+            bool canGetCrvs = DA.GetDataList(1, inCurves);
+            inputChecker.StopIfConversionIsFailed(canGetCrvs);
+
+            #endregion
+
         }
 
         /// <summary>
