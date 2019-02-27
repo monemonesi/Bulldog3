@@ -61,6 +61,7 @@
     <Compile Include="Dataviz3D\GhcHistogramFromCurve.cs" />
     <Compile Include="Dataviz3D\GhcHistogramFromSurface.cs" />
     <Compile Include="Dataviz3D\GhcPointsVisualizer.cs" />
+    <Compile Include="Fields\GhcTangentVectorField.cs" />
     <Compile Include="Geometries\GhcDuplicateBorder.cs" />
     <Compile Include="Geometries\GhcCreateSolidPA.cs" />
     <Compile Include="Geometries\GhcMeshPatch.cs" />
