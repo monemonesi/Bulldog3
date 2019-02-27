@@ -1,19 +1,21 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Bulldog3.HelperClasses;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 
 namespace Bulldog3.Fields
 {
-    public class GhcTangentVectorField : GH_Component
+    public class GhcTangentVectorFieldPA : GH_Component
     {
         /// <summary>
         /// Initializes a new instance of the GhcVectorField class.
         /// </summary>
-        public GhcTangentVectorField()
+        public GhcTangentVectorFieldPA()
           : base("TangentVectorField", "TanField",
-              "Given a series of points and curves defines the tangent vector field",
+              "Given a series of points and curves defines the tangent vector field working in parallel",
               "Bulldog3", "Fields")
         {
         }
@@ -53,9 +55,61 @@ namespace Bulldog3.Fields
             List<Curve> inCurves = new List<Curve>();
             bool canGetCrvs = DA.GetDataList(1, inCurves);
             inputChecker.StopIfConversionIsFailed(canGetCrvs);
-
             #endregion
 
+            List<Vector3d> outputVectors = new List<Vector3d>();
+            ConcurrentDictionary<Point3d, Vector3d> vecField = new ConcurrentDictionary<Point3d, Vector3d>();
+            List<double> outputScalar = new List<double>();
+            ConcurrentDictionary<Point3d, double> scalarField = new ConcurrentDictionary<Point3d, double>();
+
+            this.Message = Constants.Constants.PARALLEL_MESSAGE;
+            this.AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, Constants.Constants.PARALLEL_WARNING);
+
+            int processorCount = Environment.ProcessorCount - 1;
+
+            Parallel.ForEach(inPts, new ParallelOptions { MaxDegreeOfParallelism = processorCount },
+                pt => {
+                    GetClosestTan(pt, inCurves, ref vecField, ref scalarField);
+                });
+
+            foreach (KeyValuePair<Point3d,Vector3d> point in vecField)
+            {
+                outputVectors.Add(point.Value);
+                outputScalar.Add(scalarField[point.Key]);
+            }
+
+            DA.SetDataList(0, outputVectors);
+            DA.SetDataList(1, outputScalar);
+
+        }
+
+        private void GetClosestTan(Point3d pt, List<Curve> inCurves, ref ConcurrentDictionary<Point3d, Vector3d> vecField, ref ConcurrentDictionary<Point3d, double> scalarField)
+        {
+            double closestDistSquared = double.MaxValue;
+            int closestCrvId = 0;
+            double closestParamT = 0.0;
+
+            //Find the closest crv.
+            for (int i = 0; i < inCurves.Count; i++)
+            {
+                double t;
+                inCurves[i].ClosestPoint(pt, out t, closestDistSquared);
+
+                double distanceSquared = pt.DistanceToSquared(inCurves[i].PointAt(t));
+
+                if (distanceSquared < closestDistSquared)
+                {
+                    closestDistSquared = distanceSquared;
+                    closestCrvId = i;
+                    closestParamT = t;
+                }
+            }
+
+            Vector3d closestTan = new Vector3d();
+            closestTan = inCurves[closestCrvId].TangentAt(closestParamT);
+
+            vecField[pt] = closestTan;
+            scalarField[pt] = Math.Sqrt(closestDistSquared);
         }
 
         /// <summary>
