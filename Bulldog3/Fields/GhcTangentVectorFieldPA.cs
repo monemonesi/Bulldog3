@@ -8,6 +8,9 @@ using Rhino.Geometry;
 
 namespace Bulldog3.Fields
 {
+    /// <summary>
+    /// Create a 3D vector field from a series of points and curves
+    /// </summary>
     public class GhcTangentVectorFieldPA : GH_Component
     {
         /// <summary>
@@ -73,7 +76,7 @@ namespace Bulldog3.Fields
             Parallel.ForEach(inPts, new ParallelOptions { MaxDegreeOfParallelism = processorCount },
                 pt =>
                 {
-                    GetClosestTan(pt, crvs, ref vecField, ref scalarField);
+                    GetClosestCrv(pt, crvs, ref vecField, ref scalarField);
                 });
 
             for (int i = 0; i < ptNumber; i++)
@@ -87,7 +90,14 @@ namespace Bulldog3.Fields
 
         }
 
-        private void GetClosestTan(Point3d pt, Curve[] crvs, ref ConcurrentDictionary<Point3d, Vector3d> vecField, ref ConcurrentDictionary<Point3d, double> scalarField)
+        /// <summary>
+        /// Find the closest crv to the point
+        /// </summary>
+        /// <param name="pt"></param>
+        /// <param name="crvs"></param>
+        /// <param name="vecField"></param>
+        /// <param name="scalarField"></param>
+        private void GetClosestCrv(Point3d pt, Curve[] crvs, ref ConcurrentDictionary<Point3d, Vector3d> vecField, ref ConcurrentDictionary<Point3d, double> scalarField)
         {
             double closestDist = double.MaxValue;
             int closestCrvId = 0;
@@ -98,10 +108,7 @@ namespace Bulldog3.Fields
             {
                 if (crvs[i].ClosestPoint(pt, out double t, closestDist))
                 {
-                    double distance = pt.DistanceTo(crvs[i].PointAt(t));
-                    closestDist = distance;
-                    closestCrvId = i;
-                    closestParamT = t;
+                    pt = UpdateClosestPtValues(pt, crvs, out closestDist, out closestCrvId, out closestParamT, i, t);
 
                 }
             }
@@ -111,6 +118,28 @@ namespace Bulldog3.Fields
 
             vecField[pt] = closestTan;
             scalarField[pt] = closestDist;
+        }
+
+        /// <summary>
+        /// Update the values relative to the closest point.
+        /// </summary>
+        /// <param name="pt"></param>
+        /// <param name="crvs"></param>
+        /// <param name="closestDist"></param>
+        /// <param name="closestCrvId"></param>
+        /// <param name="closestParamT"></param>
+        /// <param name="i"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        private static Point3d UpdateClosestPtValues(Point3d pt, Curve[] crvs, 
+            out double closestDist, out int closestCrvId, out double closestParamT, 
+            int i, double t)
+        {
+            double distance = pt.DistanceTo(crvs[i].PointAt(t));
+            closestDist = distance;
+            closestCrvId = i;
+            closestParamT = t;
+            return pt;
         }
 
         /// <summary>
