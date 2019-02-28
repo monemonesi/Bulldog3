@@ -51,15 +51,18 @@ namespace Bulldog3.Fields
             List<Point3d> inPts = new List<Point3d>();
             bool canGetPts = DA.GetDataList(0, inPts);
             inputChecker.StopIfConversionIsFailed(canGetPts);
+            int ptNumber = inPts.Count;
+            Point3d[] pts = inPts.ToArray();
 
             List<Curve> inCurves = new List<Curve>();
             bool canGetCrvs = DA.GetDataList(1, inCurves);
             inputChecker.StopIfConversionIsFailed(canGetCrvs);
+            Curve[] crvs = inCurves.ToArray();
             #endregion
 
-            List<Vector3d> outputVectors = new List<Vector3d>();
+            Vector3d[] outputVectors = new Vector3d[ptNumber];
             ConcurrentDictionary<Point3d, Vector3d> vecField = new ConcurrentDictionary<Point3d, Vector3d>();
-            List<double> outputScalar = new List<double>();
+            double[] outputScalar = new double[ptNumber];
             ConcurrentDictionary<Point3d, double> scalarField = new ConcurrentDictionary<Point3d, double>();
 
             this.Message = Constants.Constants.PARALLEL_MESSAGE;
@@ -68,14 +71,15 @@ namespace Bulldog3.Fields
             int processorCount = Environment.ProcessorCount - 1;
 
             Parallel.ForEach(inPts, new ParallelOptions { MaxDegreeOfParallelism = processorCount },
-                pt => {
-                    GetClosestTan(pt, inCurves, ref vecField, ref scalarField);
+                pt =>
+                {
+                    GetClosestTan(pt, crvs, ref vecField, ref scalarField);
                 });
 
-            foreach (KeyValuePair<Point3d,Vector3d> point in vecField)
+            for (int i = 0; i < ptNumber; i++)
             {
-                outputVectors.Add(point.Value);
-                outputScalar.Add(scalarField[point.Key]);
+                outputVectors[i] = vecField[inPts[i]];
+                outputScalar[i] = scalarField[inPts[i]];
             }
 
             DA.SetDataList(0, outputVectors);
@@ -83,33 +87,30 @@ namespace Bulldog3.Fields
 
         }
 
-        private void GetClosestTan(Point3d pt, List<Curve> inCurves, ref ConcurrentDictionary<Point3d, Vector3d> vecField, ref ConcurrentDictionary<Point3d, double> scalarField)
+        private void GetClosestTan(Point3d pt, Curve[] crvs, ref ConcurrentDictionary<Point3d, Vector3d> vecField, ref ConcurrentDictionary<Point3d, double> scalarField)
         {
-            double closestDistSquared = double.MaxValue;
+            double closestDist = double.MaxValue;
             int closestCrvId = 0;
             double closestParamT = 0.0;
 
             //Find the closest crv.
-            for (int i = 0; i < inCurves.Count; i++)
+            for (int i = 0; i < crvs.Length; i++)
             {
-                double t;
-                inCurves[i].ClosestPoint(pt, out t, closestDistSquared);
-
-                double distanceSquared = pt.DistanceToSquared(inCurves[i].PointAt(t));
-
-                if (distanceSquared < closestDistSquared)
+                if (crvs[i].ClosestPoint(pt, out double t, closestDist))
                 {
-                    closestDistSquared = distanceSquared;
+                    double distance = pt.DistanceTo(crvs[i].PointAt(t));
+                    closestDist = distance;
                     closestCrvId = i;
                     closestParamT = t;
+
                 }
             }
 
             Vector3d closestTan = new Vector3d();
-            closestTan = inCurves[closestCrvId].TangentAt(closestParamT);
+            closestTan = crvs[closestCrvId].TangentAt(closestParamT);
 
             vecField[pt] = closestTan;
-            scalarField[pt] = Math.Sqrt(closestDistSquared);
+            scalarField[pt] = closestDist;
         }
 
         /// <summary>
